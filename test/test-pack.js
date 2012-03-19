@@ -112,5 +112,25 @@ module.exports = {
         X.prototype.z = 20;
         return new X();
       }()), 'c1 01 79 0a')
+  },
+
+  'references': {
+    'self-referencing array':
+      v((function(a) { return a[0] = a; }([])), 'd1 a0 00'),
+
+    'self-referencing object':
+      v((function(o) { return o.self = o; }({})), 'c1 04 73 65 6c 66 a0 00'),
+
+    'array with multiple values referencing the array itself':
+      v((function(a) { return a[0] = a[1] = a; }([])), 'd2 a0 00 a0 00'),
+
+    'self-referencing array one level down':
+      v((function(a) { a[0][0] = a[0]; return a; }([[]])), 'd1 d1 a0 01'),
+
+    'top-referencing array one level down':
+      v((function(a) { return a[0][0] = a; }([[]])), 'd1 d1 a0 00'),
+
+    'array index referencing a sibling':
+      v((function(a) { a[1][0] = a[0]; return a; }([[],[]])), 'd2 d0 d1 a0 01')
   }
 };
