@@ -14,14 +14,6 @@ function pack(input, expected) {
   };
 }
 
-pack.batch = function(arr) {
-  return function() {
-    for (var i = 0, l = arr.length; i < l; i += 2) {
-      pack(arr[i], arr[i + 1])();
-    }
-  };
-};
-
 module.exports = {
   'pack': pack
 };
