@@ -3,7 +3,18 @@
     "maxerr"        : 100,
     "node"          : true,
 
-    "predef"        : ["describe", "it"],
+    "predef"        : [
+        "ArrayBuffer",
+        "ArrayBufferView",
+        "Uint8Array",
+        "Uint16Array",
+        "Uint32Array",
+        "Int8Array",
+        "Int16Array",
+        "Int32Array",
+        "Float32Array",
+        "Float64Array"
+      ],
 
     "debug"         : false,
     "devel"         : false,
