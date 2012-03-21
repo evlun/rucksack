@@ -146,5 +146,10 @@ module.exports = {
     '/ghi/g':   v(/ghi/g,   'ac 02 03 67 68 69'),
     '/jkl/m':   v(/jkl/m,   'ac 04 03 6a 6b 6c'),
     '/mno/igm': v(/jkl/igm, 'ac 07 03 6d 6e 6f')
+  },
+
+  'dates': {
+    'new Date(0)': v(new Date(0), 'ad 00'),
+    'new Date(0)': v(new Date(123456789), 'ad 04 95 9a ef 3a')
   }
 };
