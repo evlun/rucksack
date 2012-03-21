@@ -138,5 +138,13 @@ module.exports = {
 
     'array index referencing a sibling':
       v((function(a) { a[1][0] = a[0]; return a; }([[],[]])), 'd2 d0 d1 a0 01')
+  },
+
+  'regular expressions': {
+    '/abc/':    v(/abc/,    'ac 00 03 61 62 63'),
+    '/def/i':   v(/def/i,   'ac 01 03 64 65 66'),
+    '/ghi/g':   v(/ghi/g,   'ac 02 03 67 68 69'),
+    '/jkl/m':   v(/jkl/m,   'ac 04 03 6a 6b 6c'),
+    '/mno/igm': v(/jkl/igm, 'ac 07 03 6d 6e 6f')
   }
 };
