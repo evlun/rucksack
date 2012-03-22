@@ -10,12 +10,13 @@ module.exports = {
     [new Buffer('1'), new Buffer('2')], 'd2 ab 00 01 ab 01 01 31 32'
   ],
 
-  'a buffer and a slice of it': [
+  'new Buffer(\'123\') + .slice(1, 3)': [
     [buf, buf.slice(1, 3)], 'd2 ab 00 03 ab 01 02 31 32 33'
   ],
 
-  'two distant buffer views': [
-    [shared.slice(8, 10), shared.slice(0, 2)], 'd2 ab 02 02 ab 00 02 30 31'
+  'two isolated views of the same buffer': [
+    [shared.slice(8, 10), shared.slice(0, 2)],
+    'd2 ab 02 02 ab 00 02 30 31 38 39'
   ],
 
   'two overlapping buffer views': [
