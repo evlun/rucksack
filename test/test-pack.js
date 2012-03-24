@@ -29,13 +29,10 @@ function prepare(raw) {
   return tests;
 }
 
-var files = fs.readdirSync('./test/fixtures');
-
-files = files.filter(function(path) {
-  return (path.substr(0, 18) === 'serialization-key-');
-});
-
-files.forEach(function(path) {
-  var label = path.substr(18, path.length - 21);
-  exports[label] = prepare(require('./fixtures/' + path));
+fs.readdirSync('./test/fixtures').forEach(function(path) {
+  var label;
+  if (path.substr(0, 18) === 'serialization-key-') {
+    label = path.substr(18, path.length - 21);
+    exports[label] = prepare(require('./fixtures/' + path));
+  }
 });
