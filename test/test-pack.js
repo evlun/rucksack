@@ -11,30 +11,29 @@ function inspect(buffer) {
   }).join(' ');
 }
 
-function prepare(raw) {
-  var tests = {},
-      label, test, input, expected;
+function build(input, expected, custom) {
+  return function() {
+    assert.deepEqual(inspect(pack(input, custom)), expected);
+  };
+}
 
-  for (label in raw) {
-    if (Object.prototype.hasOwnProperty.call(raw, label)) {
-      test = raw[label];
-      tests[label] = (function(input, expected, custom) {
-        return function() {
-          assert.deepEqual(inspect(pack(input, custom)), expected);
-        };
-      }(test[0], test[1], test[2]));
-    }
+function stage(path) {
+  var suite = require(path),
+      tests = {},
+      label, test;
+
+  for (label in suite) {
+    test = suite[label];
+    tests[label] = build(test[0], test[1], test[2]);
   }
 
   return tests;
 }
 
 fs.readdirSync('./test/fixtures').forEach(function(path) {
-  var label;
   if (path.substr(0, 18) === 'serialization-key-') {
-    label = path.substr(18, path.length - 21);
-    exports[label] = prepare(require('./fixtures/' + path));
+    exports[path.substr(18, path.length - 21)] = stage('./fixtures/' + path);
   }
 });
 
-exports.custom = prepare(require('./test-custom-pack'));
+exports.custom = stage('./test-custom-pack');
