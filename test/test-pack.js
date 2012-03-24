@@ -18,11 +18,11 @@ function prepare(raw) {
   for (label in raw) {
     if (Object.prototype.hasOwnProperty.call(raw, label)) {
       test = raw[label];
-      tests[label] = (function(input, expected) {
+      tests[label] = (function(input, expected, custom) {
         return function() {
-          assert.deepEqual(inspect(pack(input)), expected);
+          assert.deepEqual(inspect(pack(input, custom)), expected);
         };
-      }(test[0], test[1]));
+      }(test[0], test[1], test[2]));
     }
   }
 
@@ -36,3 +36,5 @@ fs.readdirSync('./test/fixtures').forEach(function(path) {
     exports[label] = prepare(require('./fixtures/' + path));
   }
 });
+
+exports.custom = prepare(require('./test-custom-pack'));
