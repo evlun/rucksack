@@ -11,16 +11,44 @@ function isStrictDeepEqual(a, e, ar, er) {
   if (e !== e) // NaN !== NaN
     return a !== a;
 
+  if (typeof a !== typeof e)
+    return false;
+
   if (typeof e !== 'object' || e === null)
     return a === e;
 
-  if (e instanceof Buffer || e instanceof Array) {
+  if (e instanceof Buffer) {
     if (a.length !== e.length)
       return false;
 
     for (i = 0; i < a.length; i++) {
       if (a[i] !== e[i])
         return false;
+    }
+
+    return true;
+  }
+
+  if (e instanceof Array) {
+    if (a.length !== e.length)
+      return false;
+
+    for (i = 0; i < e.length; i++) {
+      av = a[i];
+      ev = e[i];
+
+      r = er.indexOf(ev);
+      if (r !== -1)
+        return ar.indexOf(av) === r;
+
+      ar.push(av);
+      er.push(ev);
+
+      if (!isStrictDeepEqual(av, ev, ar, er))
+        return false;
+
+      ar.pop();
+      er.pop();
     }
 
     return true;
@@ -51,7 +79,7 @@ function isStrictDeepEqual(a, e, ar, er) {
     av = a[key];
     ev = e[key];
 
-    r = ev.indexOf(e[key]);
+    r = er.indexOf(ev);
     if (r !== -1)
       return ar.indexOf(av) === r;
 
@@ -77,7 +105,7 @@ function construct(str) {
 function build(expected, input, custom) {
   return function() {
     var actual = unpack(construct(input), custom);
-    if (!isStrictDeepEqual(actual, expected, [], [])) {
+    if (!isStrictDeepEqual(actual, expected, [actual], [expected])) {
       throw new assert.AssertionError({
         'actual': actual,
         'expected': expected,
