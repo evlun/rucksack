@@ -1,5 +1,5 @@
 test:
-	@mocha --reporter spec --ui exports test/test-all.js
+	@mocha --reporter min --ui exports test/test-all.js
 
 lint:
 	@jshint .
