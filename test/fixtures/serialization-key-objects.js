@@ -1,9 +1,3 @@
-function X() {
-  this.y = 10;
-}
-X.prototype.z = 20;
-var instance = new X();
-
 module.exports = {
   '{}':             [{},             'c0'],
   '{ a: 1 }':       [{ a: 1 },       'c1 01 61 01'],
@@ -16,7 +10,5 @@ module.exports = {
 
   '{ h: \'abc\', i: \'åäö\' }': [
     { h: 'abc', i: 'åäö' }, 'c2 01 68 e3 61 62 63 01 69 e6 c3 a5 c3 a4 c3 b6'
-  ],
-
-  'ignore inherited/prototype properties': [instance, 'c1 01 79 0a']
+  ]
 };

@@ -36,4 +36,7 @@ fs.readdirSync('./test/fixtures').forEach(function(path) {
   }
 });
 
+exports['object prototypes should be ignored'] =
+  require('./test-pack-ignore-prototype.js');
+
 exports.custom = stage('./test-custom-pack');
