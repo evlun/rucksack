@@ -1,0 +1,19 @@
+{
+  "name": "square",
+  "author": "Erik Lundin",
+  "description": "Binary serialization library",
+  "keywords": ["binary", "serialize", "unserialize"],
+  "version": "0.0.1",
+  "homepage": "http://github.com/mjor/square",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mjor/square.git"
+  },
+  "engines": {
+    "node": ">=0.6.0"
+  },
+  "licenses": [{
+    "type": "MIT",
+    "url": "http://github.com/mjor/square/raw/master/LICENSE"
+  }]
+}
