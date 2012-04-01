@@ -1,19 +1,19 @@
 {
-  "name": "square",
+  "name": "rucksack",
   "author": "Erik Lundin",
   "description": "Binary serialization library",
   "keywords": ["binary", "serialize", "unserialize"],
   "version": "0.0.1",
-  "homepage": "http://github.com/mjor/square",
+  "homepage": "http://github.com/mjor/rucksack",
   "repository": {
     "type": "git",
-    "url": "git://github.com/mjor/square.git"
+    "url": "git://github.com/mjor/rucksack.git"
   },
   "engines": {
     "node": ">=0.6.0"
   },
   "licenses": [{
     "type": "MIT",
-    "url": "http://github.com/mjor/square/raw/master/LICENSE"
+    "url": "http://github.com/mjor/rucksack/raw/master/LICENSE"
   }]
 }
