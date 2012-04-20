@@ -5,6 +5,9 @@
   "keywords": ["binary", "serialize", "unserialize"],
   "version": "0.0.2",
   "homepage": "http://github.com/mjor/rucksack",
+  "devDependencies": {
+    "mocha": "1.0.1"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/mjor/rucksack.git"
