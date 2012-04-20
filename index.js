@@ -1,4 +1,1 @@
-module.exports = {
-  'pack': require('./lib/pack'),
-  'unpack': require('./lib/unpack')
-};
+module.exports = require('./lib/rucksack');
