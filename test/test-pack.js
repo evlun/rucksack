@@ -1,42 +1,41 @@
-var fs = require('fs'),
+var label,
     assert = require('assert'),
-    pack = require('../').pack;
+    definitions = require('./definitions'),
+    rucksack = require('../');
 
+// converts `new Buffer([0x01, 0x02, 0x03, 0x04])` to '01 02 03 04'
 function inspect(buffer) {
-  if (!(buffer instanceof Buffer)) return buffer;
+  var i, hex, byte, bytes = [];
 
-  return Array.prototype.map.call(buffer, function(byte) {
-    var hex = byte.toString(16);
-    return (byte < 16 ? '0' + hex : hex);
-  }).join(' ');
-}
-
-function build(input, expected, custom) {
-  return function() {
-    assert.deepEqual(inspect(pack(input, custom)), expected);
-  };
-}
-
-function stage(path) {
-  var suite = require(path),
-      tests = {},
-      label, test;
-
-  for (label in suite) {
-    test = suite[label];
-    tests[label] = build(test[0], test[1], test[2]);
+  for (i = 0; i < buffer.length; i++) {
+    byte = buffer[i];
+    hex = byte.toString(16);
+    bytes.push(byte < 16 ? '0' + hex : hex);
   }
 
-  return tests;
+  return bytes.join(' ');
 }
 
-fs.readdirSync('./test/fixtures').forEach(function(path) {
-  if (path.substr(0, 18) === 'serialization-key-') {
-    exports[path.substr(18, path.length - 21)] = stage('./fixtures/' + path);
-  }
-});
+for (label in definitions) {
+  (function(label) {
+    var def = definitions[label],
+        input = def.value,
+        expected = def.serialized;
 
-exports['object prototypes should be ignored'] =
-  require('./test-pack-ignore-prototype.js');
+    exports['pack ' + label + ' according to the spec'] = function() {
+      var actual = inspect(rucksack.pack(input));
+      assert.deepEqual(actual, expected);
+    };
+  })(label);
+}
 
-exports.custom = stage('./test-custom-pack');
+// add test to make sure inherited properties
+exports['ignore inherited properties when packing objects'] = function() {
+  var actual = rucksack.pack((function() {
+    function X() { this.y = 1; }
+    X.prototype.z = 2;
+    return new X();
+  })());
+
+  assert.deepEqual(inspect(actual), 'd1 01 79 01');
+};

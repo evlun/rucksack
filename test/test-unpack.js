@@ -1,139 +1,155 @@
-var fs = require('fs'),
-    assert = require('assert'),
-    unpack = require('../').unpack;
+var assert = require('assert'),
+    definitions = require('./definitions'),
+    rucksack = require('../');
 
-function isStrictDeepEqual(a, e, ar, er) {
-  var i, key, ak, ek, av, ev, r;
+// this is more or less a port of assert.strictDeepEqual, but with added support
+// for circular objects and arrays
+function isEqual(actual, expected, actualStack, expectedStack) {
+  var i, index, key, actualValue, expectedValue, actualKeys, expectedKeys;
 
-  if (a === e)
+  if (actual === expected) {
     return true;
+  }
 
-  if (e !== e) // NaN !== NaN
-    return a !== a;
+  // handle NaN
+  if (expected !== expected) {
+    return actual !== actual;
+  }
 
-  if (typeof a !== typeof e)
+  if (typeof actual !== typeof expected) {
     return false;
+  }
 
-  if (typeof e !== 'object' || e === null)
-    return a === e;
+  // non-object values can be evaluated with the `===` operator
+  if (typeof expected !== 'object' || expected === null) {
+    return actual === expected;
+  }
 
-  if (e instanceof Buffer) {
-    if (a.length !== e.length)
+  if (expected instanceof Buffer) {
+    if (actual.length !== expected.length) {
       return false;
+    }
 
-    for (i = 0; i < a.length; i++) {
-      if (a[i] !== e[i])
+    for (i = 0; i < actual.length; i++) {
+      if (actual[i] !== expected[i]) {
         return false;
+      }
     }
 
     return true;
   }
 
-  if (e instanceof Array) {
-    if (a.length !== e.length)
+  if (expected instanceof Array) {
+    if (actual.length !== expected.length) {
       return false;
+    }
 
-    for (i = 0; i < e.length; i++) {
-      av = a[i];
-      ev = e[i];
+    for (i = 0; i < expected.length; i++) {
+      actualValue = actual[i];
+      expectedValue = expected[i];
 
-      r = er.indexOf(ev);
-      if (r !== -1)
-        return ar.indexOf(av) === r;
+      // see if we have visited this value before
+      index = expectedStack.indexOf(expectedValue);
+      if (index !== -1) {
+        return actualStack.indexOf(actualValue) === index;
+      }
 
-      ar.push(av);
-      er.push(ev);
+      actualStack.push(actualValue);
+      expectedStack.push(expectedValue);
 
-      if (!isStrictDeepEqual(av, ev, ar, er))
+      if (!isEqual(actualValue, expectedValue, actualStack, expectedStack)) {
         return false;
+      }
 
-      ar.pop();
-      er.pop();
+      actualStack.pop();
+      expectedStack.pop();
     }
 
     return true;
   }
 
-  if (e instanceof RegExp)
-    return a instanceof RegExp && a.source === e.source &&
-           a.global === e.global && a.multiline === e.multiline &&
-           a.ignoreCase === e.ignoreCase && a.lastIndex === e.lastIndex;
+  // we don't care about `x.lastIndex`
+  if (expected instanceof RegExp) {
+    return actual instanceof RegExp &&
+           actual.source === expected.source &&
+           actual.global === expected.global &&
+           actual.multiline === expected.multiline &&
+           actual.ignoreCase === expected.ignoreCase;
+  }
 
-  if (e instanceof Date)
-    return a instanceof Date && a.getTime() === e.getTime();
+  if (expected instanceof Date) {
+    return actual instanceof Date &&
+           actual.getTime() === expected.getTime();
+  }
 
-  if (a.constructor !== e.constructor)
+  // from this point forward we'll treat the value like an object literal
+  (expectedKeys = Object.keys(expected)).sort();
+  (actualKeys = Object.keys(actual)).sort();
+
+  if (expectedKeys.length !== actualKeys.length) {
     return false;
+  }
 
-  (ek = Object.keys(e)).sort();
-  (ak = Object.keys(a)).sort();
+  for (i = 0; i < expectedKeys.length; i++) {
+    key = expectedKeys[i];
 
-  if (ek.length !== ak.length) return false;
-
-  for (i = 0; i < ek.length; i++) {
-    key = ek[i];
-
-    if (ak[i] !== key)
+    if (actualKeys[i] !== key) {
       return false;
+    }
 
-    av = a[key];
-    ev = e[key];
+    actualValue = actual[key];
+    expectedValue = expected[key];
 
-    r = er.indexOf(ev);
-    if (r !== -1)
-      return ar.indexOf(av) === r;
+    // is the value an object lower down in the stack?
+    index = expectedStack.indexOf(expectedValue);
+    if (index !== -1) {
+      return actualStack.indexOf(actualValue) === index;
+    }
 
-    ar.push(av);
-    er.push(ev);
+    actualStack.push(actualValue);
+    expectedStack.push(expectedValue);
 
-    if (!isStrictDeepEqual(av, ev, ar, er))
+    if (!isEqual(actualValue, expectedValue, actualStack, expectedStack)) {
       return false;
+    }
 
-    ar.pop();
-    er.pop();
+    actualStack.pop();
+    expectedStack.pop();
   }
 
   return true;
 }
 
-function construct(str) {
-  return new Buffer(str.split(' ').map(function(byte) {
-    return parseInt(byte, 16);
-  }));
-}
+// creates a buffer out of a space-delimited byte sequence string (for example:
+// '01 02 03' to `new Buffer([0x01, 0x02, 0x03])`)
+function createBuffer(str) {
+  var i, bytes = str.split(' ');
 
-function build(expected, input, custom) {
-  return function() {
-    var actual = unpack(construct(input), custom);
-    if (!isStrictDeepEqual(actual, expected, [actual], [expected])) {
-      throw new assert.AssertionError({
-        'actual': actual,
-        'expected': expected,
-        'operator': '!==',
-        'message': '',
-        'stackStartFunction': this
-      });
-    }
-  };
-}
-
-function stage(path) {
-  var suite = require(path),
-      tests = {},
-      label, test;
-
-  for (label in suite) {
-    test = suite[label];
-    tests[label] = build(test[0], test[1], test[2]);
+  for (i = 0; i < bytes.length; i++) {
+    bytes[i] = parseInt(bytes[i], 16);
   }
 
-  return tests;
+  return new Buffer(bytes);
 }
 
-fs.readdirSync('./test/fixtures').forEach(function(path) {
-  if (path.substr(0, 18) === 'serialization-key-') {
-    exports[path.substr(18, path.length - 21)] = stage('./fixtures/' + path);
-  }
-});
+for (var label in definitions) {
+  (function(label) {
+    var def = definitions[label],
+        input = createBuffer(def.serialized),
+        expected = def.value;
 
-exports.custom = stage('./test-custom-unpack');
+    exports['unpack ' + label + ' according to the spec'] = function() {
+      var actual = rucksack.unpack(input);
+
+      if (!isEqual(actual, expected, [actual], [expected])) {
+        throw new assert.AssertionError({
+          'actual': actual,
+          'expected': expected,
+          'operator': '!==',
+          'message': '',
+          'stackStactualStacktFunction': this
+        });
+      }
+    };
+  })(label);
+}
