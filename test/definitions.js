@@ -8,7 +8,6 @@ function define(label, value, serialized) {
 }
 
 
-
 // basic values
 define('undefined', 'a1');
 define('null', 'a2');
@@ -19,7 +18,6 @@ define('Infinity', 'a6');
 define('-Infinity', 'a7');
 
 
-
 // fixnums
 define('0', '00');
 define('1', '01');
@@ -28,7 +26,6 @@ define('127', '7f');
 define('-0', '80');
 define('-1', '81');
 define('-31', '9f');
-
 
 
 // varints
@@ -68,11 +65,9 @@ define('9007199254740992', 'a8 80 ff ff ff ff ff ff 0f');
 define('-9007199254740992', 'a9 e0 ff ff ff ff ff ff 0f');
 
 
-
 // integers too beyond the varint limits
 define('9007199254740994', 'aa 01 00 00 00 00 00 40 43');
 define('-9007199254740994', 'aa 01 00 00 00 00 00 40 c3');
-
 
 
 // doubles
@@ -86,8 +81,6 @@ define('-1.7976931348623157e+308', 'aa ff ff ff ff ff ff ef ff');
 
 define('5e-324', 'aa 01 00 00 00 00 00 00 00');
 define('-5e-324', 'aa 01 00 00 00 00 00 00 80');
-
-
 
 
 // strings
@@ -108,14 +101,12 @@ define('a 32-char string', 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
   '78 78 78 78 78 78 78 78 78 78 78 78 78 78 78 78 78');
 
 
-
 // regular expressions
 define('/abc/', 'ad 00 03 61 62 63');
 define('/def/i', 'ad 01 03 64 65 66');
 define('/ghi/g', 'ad 02 03 67 68 69');
 define('/jkl/m', 'ad 04 03 6a 6b 6c');
 define('/mno/igm', 'ad 07 03 6d 6e 6f');
-
 
 
 // dates
@@ -126,7 +117,6 @@ define('new Date(-1)', 'ab 00');
 define('new Date(-123456789)', 'ab 94 9a ef 3a');
 
 
-
 // arrays
 define('[]', 'c0');
 define('[[], []]', 'c2 c0 c0');
@@ -134,8 +124,8 @@ define('[1, 2, 3]', 'c3 01 02 03');
 define('[[1], 2, [3], [4, 5]]', 'c4 c1 01 02 c1 03 c2 04 05');
 define(
   '[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]',
-  'cf 05 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f 10 11 12 13 14');
-
+  'cf 05 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f 10 11 12 13 14'
+);
 
 
 // objects
@@ -151,21 +141,30 @@ define(
   '{ a: 1, b: 2, c: 3, d: 4, e: 5, f: 6, g: 7, h: 8, i: 9, j: 10, k: 11, ' +
     'l: 12, m: 13, n: 14, o: 15, p: 16, q: 17, r: 18, s: 19, t: 20 }',
   'df 05 01 61 01 01 62 02 01 63 03 01 64 04 01 65 05 01 66 06 01 67 07 01 ' +
-  '68 08 01 69 09 01 6a 0a 01 6b 0b 01 6c 0c 01 6d 0d 01 6e 0e 01 6f 0f 01 ' +
-  '70 10 01 71 11 01 72 12 01 73 13 01 74 14');
+    '68 08 01 69 09 01 6a 0a 01 6b 0b 01 6c 0c 01 6d 0d 01 6e 0e 01 6f 0f ' +
+    '01 70 10 01 71 11 01 72 12 01 73 13 01 74 14'
+);
 
 
 // references
-var a, b, c, d, e, f;
-
-a = []; a.push(a);
-b = {}; b.self = b;
-c = [[]]; c.push(c); c.push(c);
-d = [[]]; d.push({ top: d });
-e = [[], []]; f = [e[1]]; e[1].push(f);
-
+var a = [];
+a.push(a);
 define('[[Circular]]', a, 'c1 a0 00');
+
+var b = {};
+b.self = b;
 define('{ self: [Circular] }', b, 'd1 04 73 65 6c 66 a0 00');
+
+var c = [[]];
+c.push(c);
+c.push(c);
 define('[[], [Circular], [Circular]]', c, 'c3 c0 a0 00 a0 00');
+
+var d = [[]];
+d.push({ top: d });
 define('[[], { top: [Circular] }]', d, 'c2 c0 d1 03 74 6f 70 a0 00');
+
+var e = [[], []],
+    f = [e[1]];
+e[1].push(f);
 define('[[], [[Circular]]]', e, 'c2 c0 c1 c1 a0 02');
