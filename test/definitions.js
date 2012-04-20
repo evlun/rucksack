@@ -153,10 +153,10 @@ a = []; a.push(a);
 b = {}; b.self = b;
 c = [[]]; c.push(c); c.push(c);
 d = [[]]; d.push({ top: d });
-e = [[], []]; f = [e]; e[1].push(f);
+e = [[], []]; f = [e[1]]; e[1].push(f);
 
 define('[[Circular]]', a, 'c1 a0 00');
 define('{ self: [Circular] }', b, 'd1 04 73 65 6c 66 a0 00');
 define('[[], [Circular], [Circular]]', c, 'c3 c0 a0 00 a0 00');
 define('[[], { top: [Circular] }]', d, 'c2 c0 d1 03 74 6f 70 a0 00');
-define('[[], [[Circular]]]', e, 'c2 c0 c1 c1 a0 00');
+define('[[], [[Circular]]]', e, 'c2 c0 c1 c1 a0 02');
