@@ -1,7 +1,4 @@
 test:
-	@mocha --reporter min --ui exports test/test-all.js
+	@mocha -R dot -u exports test/test-all.js
 
-lint:
-	@jshint .
-
-.PHONY: test jshint
+.PHONY: test
