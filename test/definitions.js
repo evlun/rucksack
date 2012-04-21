@@ -100,6 +100,19 @@ define('a 32-char string', 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
   'ff 01 78 78 78 78 78 78 78 78 78 78 78 78 78 78 78 ' +
   '78 78 78 78 78 78 78 78 78 78 78 78 78 78 78 78 78');
 
+var i, char,
+    base = 'a'.charCodeAt(0),
+    str = '',
+    exp = 'ff c9 07';
+
+for (i = 0; i < 1000; i++) {
+  char = base + i % 26;
+  str += String.fromCharCode(char);
+  exp += ' ' + char.toString(16);
+}
+
+define('a 1000-char string', str, exp);
+
 
 // regular expressions
 define('/abc/', 'ad 00 03 61 62 63');
@@ -168,3 +181,24 @@ var e = [[], []],
     f = [e[1]];
 e[1].push(f);
 define('[[], [[Circular]]]', e, 'c2 c0 c1 c1 a0 02');
+
+
+// mixed values
+var arr = [
+  [],
+  null,
+  false,
+  '◊ˆ∑∆Ü',
+  9, -0, 0.102, 0.2, 987654321, -123456789,
+  { 3: 'abc', undef: undefined }
+];
+arr[0].push(arr);
+
+define(
+  '[[[Circular]], null, false, "◊ˆ∑∆Ü", 9, -0, 0.102, 0.2, 987654321, ' +
+    '-123456789, { 3: "abc", undef: undefined }]',
+  arr,
+  'cb c1 a0 00 a2 a4 ed e2 97 8a cb 86 e2 88 91 e2 88 86 c3 9c 09 80 aa e9 ' +
+    '26 31 08 ac 1c ba 3f aa 9a 99 99 99 99 99 c9 3f a8 b1 d0 f9 d6 03 a9 ' +
+    'f5 99 ef 3a d2 01 33 e3 61 62 63 05 75 6e 64 65 66 a1'
+);
