@@ -1,5 +1,7 @@
 Robust and efficient binary serialization for node.js.
 
+[![Build Status](https://secure.travis-ci.org/mjor/rucksack.png)](http://travis-ci.org/mjor/rucksack)
+
 ## Usage
 
 ```javascript
