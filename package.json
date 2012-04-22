@@ -1,8 +1,8 @@
 {
   "name": "rucksack",
   "author": "Erik Lundin",
-  "description": "Binary serialization library",
-  "keywords": ["binary", "serialize", "unserialize"],
+  "description": "Robust and efficient binary serialization",
+  "keywords": ["binary", "serialization"],
   "version": "0.1.0",
   "homepage": "http://github.com/mjor/rucksack",
   "devDependencies": {
@@ -19,7 +19,6 @@
     "node": ">=0.6.0"
   },
   "licenses": [{
-    "type": "MIT",
-    "url": "http://github.com/mjor/rucksack/raw/master/LICENSE"
+    "type": "MIT"
   }]
 }
