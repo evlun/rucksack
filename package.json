@@ -8,6 +8,7 @@
   "devDependencies": {
     "mocha": "1.0.1"
   },
+  "main": "lib/rucksack.js",
   "scripts": {
     "test": "make test"
   },
