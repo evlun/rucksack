@@ -51,3 +51,10 @@ exports['treat Boolean objects like booleans'] = function() {
 
   assert.equal(actual, expected);
 };
+
+exports['don\'t reuse chunks of memory when packing'] = function() {
+  var buf = rucksack.pack(0);
+  rucksack.pack(1);
+  assert.equal(buf[0], 0);
+};
+
