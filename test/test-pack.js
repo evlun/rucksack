@@ -37,3 +37,17 @@ exports['ignore objects\' inherited properties'] = function() {
   var actual = rucksack.pack(new X());
   assert.equal(inspect(actual), 'd0');
 };
+
+exports['treat String objects like strings'] = function() {
+  var actual = inspect(rucksack.pack(new String('abcdef'))),
+      expected = inspect(rucksack.pack('abcdef'));
+
+  assert.equal(actual, expected);
+};
+
+exports['treat Boolean objects like booleans'] = function() {
+  var actual = inspect(rucksack.pack(new Boolean(false))),
+      expected = inspect(rucksack.pack(false));
+
+  assert.equal(actual, expected);
+};
