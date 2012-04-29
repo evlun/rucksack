@@ -24,18 +24,16 @@ for (label in definitions) {
 
     exports['pack ' + label + ' according to the spec'] = function() {
       var actual = inspect(rucksack.pack(input));
-      assert.deepEqual(actual, expected);
+      assert.equal(actual, expected);
     };
   })(label);
 }
 
-// add test to make sure inherited properties
-exports['ignore inherited properties when packing objects'] = function() {
-  var actual = rucksack.pack((function() {
-    function X() { this.y = 1; }
-    X.prototype.z = 2;
-    return new X();
-  })());
+exports['ignore objects\' inherited properties'] = function() {
+  function X() {}
+  X.prototype.y = 2;
+  X.prototype.z = function() {};
 
-  assert.deepEqual(inspect(actual), 'd1 01 79 01');
+  var actual = rucksack.pack(new X());
+  assert.equal(inspect(actual), 'd0');
 };
