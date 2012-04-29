@@ -52,6 +52,13 @@ exports['treat Boolean objects like booleans'] = function() {
   assert.equal(actual, expected);
 };
 
+exports['treat Number objects like numbers'] = function() {
+  var actual = inspect(rucksack.pack(new Number(10))),
+      expected = inspect(rucksack.pack(10));
+
+  assert.equal(actual, expected);
+};
+
 exports['don\'t reuse chunks of memory when packing'] = function() {
   var buf = rucksack.pack(0);
   rucksack.pack(1);
